@@ -1,633 +1,889 @@
 <!DOCTYPE html>
-<html lang="mk">
+<html lang="mk" class="h-full bg-slate-950 text-slate-100 selection:bg-blue-500 selection:text-white">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Споделен Превоз</title>
-  <meta name="theme-color" content="#2563eb">
-  <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogI
-0KHDQv9C%2B0LTQtdC70LXQvSDQn9GA0LXQstC%2B0LciLAogICJzaG9ydF9uYW1lIjogI
-0KHDQv9C%2B0LTQtdC70LXQvSDQn9GA0LXQstC%2B0LciLAogICJzdGFydF91cmwiOiAiLi
-8iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjog
-IiNmOGfafmEiLAogICJ0aGVtZV9jb2xvcIjogIiMyNTYzZWIiCiB9">
-  <style>
-    :root {
-      --primary: #2563eb;
-      --primary-dark: #1d4ed8;
-      --bg: #f8fafc;
-      --card-bg: #ffffff;
-      --text: #0f172a;
-      --text-muted: #64748b;
-      --border: #e2e8f0;
-      --danger: #ef4444;
-      --success: #10b981;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Споделен Превоз | Скопје ⇄ Кочани ⇄ Аеродром</title>
     
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#0f172a">
+    <meta name="description" content="Фер и поволен споделен превоз за релација Скопје, Кочани и Аеродром.">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3097/3097180.png">
 
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      line-height: 1.5;
-      padding-bottom: 40px;
-    }
-
-    header {
-      background: linear-gradient(135deg, #1e40af, #2563eb);
-      color: white;
-      padding: 20px 16px;
-      text-align: center;
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    header h1 {
-      font-size: 1.5rem;
-      font-weight: 700;
-    }
-
-    header p {
-      font-size: 0.875rem;
-      opacity: 0.9;
-      margin-top: 4px;
-    }
-
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 16px;
-    }
-
-    .card {
-      background: var(--card-bg);
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 16px;
-      border: 1px solid var(--border);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-
-    .form-group {
-      margin-bottom: 12px;
-    }
-
-    label {
-      display: block;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      margin-bottom: 4px;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 1rem;
-      background-color: #fff;
-      color: var(--text);
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    input:focus, select:focus {
-      border-color: var(--primary);
-    }
-
-    .btn {
-      display: inline-block;
-      width: 100%;
-      padding: 12px;
-      background-color: var(--primary);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      text-align: center;
-      transition: background-color 0.2s;
-    }
-
-    .btn:hover {
-      background-color: var(--primary-dark);
-    }
-
-    .btn:disabled {
-      background-color: #94a3b8;
-      cursor: not-allowed;
-    }
-
-    .btn-outline {
-      background: transparent;
-      color: var(--primary);
-      border: 1px solid var(--primary);
-    }
-
-    .btn-danger {
-      background-color: var(--danger);
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-
-    .badge-driver {
-      background-color: #dbeafe;
-      color: #1e40af;
-    }
-
-    .badge-passenger {
-      background-color: #d1fae5;
-      color: #065f46;
-    }
-
-    .ride-card {
-      position: relative;
-    }
-
-    .ride-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .ride-route {
-      font-size: 1.1rem;
-      font-weight: 700;
-    }
-
-    .ride-price {
-      font-size: 1.2rem;
-      font-weight: 800;
-      color: var(--primary-dark);
-    }
-
-    .ride-details {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      margin-bottom: 12px;
-    }
-
-    .ride-actions {
-      display: flex;
-      gap: 8px;
-    }
-
-    .ride-actions a, .ride-actions button {
-      flex: 1;
-      text-decoration: none;
-      font-size: 0.875rem;
-      padding: 8px;
-      border-radius: 6px;
-      text-align: center;
-      font-weight: 600;
-    }
-
-    .btn-phone {
-      background-color: #3b82f6;
-      color: white;
-    }
-
-    .btn-viber {
-      background-color: #7360f2;
-      color: white;
-    }
-
-    .price-notice {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
-
-    .admin-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 16px;
-      background: #f1f5f9;
-      border-bottom: 1px solid var(--border);
-      font-size: 0.85rem;
-    }
-
-    .admin-modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.5);
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-    }
-
-    .modal-content {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 400px;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .info-box {
-      background-color: #ecfdf5;
-      border: 1px solid #a7f3d0;
-      color: #065f46;
-      padding: 10px;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      margin-bottom: 12px;
-    }
-  </style>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #334155; }
+    </style>
 </head>
-<body>
+<body class="h-full flex flex-col font-sans bg-slate-950 text-slate-100 antialiased">
 
-  <div class="admin-bar">
-    <span>Статус: <strong id="adminStatusText">Корисник</strong></span>
-    <button class="btn-outline" style="width: auto; padding: 4px 12px; font-size: 0.8rem;" id="adminToggleBtn" onclick="toggleAdminModal()">Админ Најава</button>
-  </div>
+    <!-- Header -->
+    <header class="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 sticky top-0 z-30 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 text-white flex items-center justify-center font-bold text-lg shadow-lg shadow-blue-500/20">
+                        <i class="fa-solid fa-car-side"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-base sm:text-lg font-bold text-white leading-tight">Споделен Превоз</h1>
+                        <p class="text-[11px] text-slate-400">Скопје ⇄ Кочани ⇄ Аеродром</p>
+                    </div>
+                </div>
 
-  <header>
-    <h1>Споделен Превоз</h1>
-    <p>Скопје ⇄ Кочани ⇄ Аеродром</p>
-  </header>
+                <div class="flex items-center gap-2">
+                    <button onclick="openAdminModal()" id="adminBtn" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl border border-slate-700 transition-all">
+                        <i class="fa-solid fa-user-shield text-blue-400"></i>
+                        <span id="adminBtnText">Админ</span>
+                    </button>
 
-  <div class="container">
-    <div class="card">
-      <h2 style="font-size: 1.1rem; margin-bottom: 12px;">Објави превоз / барање</h2>
-      <form id="rideForm" onsubmit="handleFormSubmit(event)">
-        
-        <div class="form-group">
-          <label>Улога</label>
-          <select id="role" onchange="handleRoleChange()">
-            <option value="driver">Возач (Нудам превоз)</option>
-            <option value="passenger">Патник (Барам превоз)</option>
-          </select>
+                    <a href="#rideFormCard" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs sm:text-sm font-semibold rounded-xl shadow-lg shadow-blue-600/30 transition-all">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Објави</span>
+                    </a>
+                </div>
+            </div>
         </div>
+    </header>
 
-        <div class="form-group">
-          <label>Релација</label>
-          <select id="route" onchange="handleRouteChange()">
-            <option value="kocani-skopje">Кочани ⇄ Скопје (Еден правец)</option>
-            <option value="kocani-skopje-round">Кочани ⇄ Скопје (Повратна)</option>
-            <option value="kocani-airport">Кочани ⇄ Аеродром Скопје</option>
-          </select>
+    <main class="flex-1 pb-16">
+        <!-- Banner -->
+        <section class="bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border-b border-slate-800/80 py-6">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-2">
+                <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                    <i class="fa-solid fa-shield-halved text-yellow-400"></i> Заштита од див и комерцијален превоз
+                </span>
+                <h2 class="text-xl sm:text-3xl font-extrabold text-white">
+                    Споделени трошоци со <span class="text-blue-400">строго фер цени</span>
+                </h2>
+                <p class="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto">
+                    Платформа за меѓусебно споделување гориво за патниците и возачите. Без профитерство!
+                </p>
+            </div>
+        </section>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 space-y-8">
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                
+                <!-- New Ride Form -->
+                <div id="rideFormCard" class="lg:col-span-7 bg-slate-900 rounded-2xl p-5 sm:p-6 border border-slate-800 shadow-xl relative">
+                    <div class="border-b border-slate-800 pb-3 mb-4 flex items-center justify-between">
+                        <div>
+                            <h3 class="text-base font-bold text-white">Нова објава</h3>
+                            <p class="text-xs text-slate-400">Пополнете ги деталите за патувањето</p>
+                        </div>
+                        <span class="p-2 bg-blue-500/10 text-blue-400 rounded-xl">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </span>
+                    </div>
+
+                    <form id="rideForm" class="space-y-4" onsubmit="handleFormSubmit(event)">
+                        
+                        <!-- Role Selection -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Вид на објава:</label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <label class="relative flex items-center justify-center p-3 bg-slate-950 border border-slate-800 rounded-xl cursor-pointer hover:border-blue-500 transition-all has-[:checked]:border-blue-500 has-[:checked]:bg-blue-500/10">
+                                    <input type="radio" name="role" value="driver" checked class="sr-only" onchange="updateRoleUI()">
+                                    <div class="flex items-center gap-2 text-slate-200 text-xs font-bold">
+                                        <i class="fa-solid fa-car text-blue-400"></i>
+                                        <span>Нудам превоз (Возач)</span>
+                                    </div>
+                                </label>
+                                <label class="relative flex items-center justify-center p-3 bg-slate-950 border border-slate-800 rounded-xl cursor-pointer hover:border-blue-500 transition-all has-[:checked]:border-blue-500 has-[:checked]:bg-blue-500/10">
+                                    <input type="radio" name="role" value="passenger" class="sr-only" onchange="updateRoleUI()">
+                                    <div class="flex items-center gap-2 text-slate-200 text-xs font-bold">
+                                        <i class="fa-solid fa-user-group text-indigo-400"></i>
+                                        <span>Барам превоз (Патник)</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Name & Phone -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label for="fullName" class="block text-xs font-medium text-slate-300 mb-1">Име и презиме *</label>
+                                <input type="text" id="fullName" required placeholder="пр. Петар Попов" 
+                                    class="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none text-white">
+                            </div>
+                            <div>
+                                <label for="phone" class="block text-xs font-medium text-slate-300 mb-1">Телефонски број (Viber) *</label>
+                                <input type="tel" id="phone" required placeholder="07X XXX XXX" onkeyup="autoFillPinFromPhone()" 
+                                    class="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none text-white">
+                            </div>
+                        </div>
+
+                        <!-- Route & Seats -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label for="route" class="block text-xs font-medium text-slate-300 mb-1">Релација *</label>
+                                <select id="route" required onchange="handleRouteChange()" 
+                                    class="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none text-white">
+                                    <option value="kocani_skopje">Кочани ➔ Скопје (Еден правец)</option>
+                                    <option value="skopje_kocani">Скопје ➔ Кочани (Еден правец)</option>
+                                    <option value="kocani_skopje_return">Кочани ⇄ Скопје (Повратна)</option>
+                                    <option value="kocani_airport">Кочани ➔ Аеродром Скопје</option>
+                                    <option value="airport_kocani">Аеродром Скопје ➔ Кочани</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="seats" id="seatsLabel" class="block text-xs font-medium text-slate-300 mb-1">Слободни места *</label>
+                                <select id="seats" required 
+                                    class="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none text-white">
+                                    <option value="1">1 место</option>
+                                    <option value="2">2 места</option>
+                                    <option value="3" selected>3 места</option>
+                                    <option value="4">4 места</option>
+                                    <option value="5">5 места</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Custom Calendar Picker Trigger -->
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Датум на патување *</label>
+                            <div onclick="openCalendarModal()" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 hover:border-blue-500 rounded-xl text-sm text-white cursor-pointer flex items-center justify-between transition-all">
+                                <span id="displayFormattedDate" class="font-semibold text-blue-400">Изберете датум...</span>
+                                <i class="fa-regular fa-calendar-days text-blue-400 text-base"></i>
+                            </div>
+                            <input type="hidden" id="travelDate" required>
+                        </div>
+
+                        <!-- Time Selector -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div id="singleTimeContainer">
+                                <label for="departureTime" class="block text-xs font-medium text-slate-300 mb-1" id="depTimeLabel">Час на поаѓање (24ч) *</label>
+                                <select id="departureTime" required 
+                                    class="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none text-white font-mono">
+                                </select>
+                            </div>
+
+                            <div id="returnTimeContainer" class="hidden">
+                                <label for="returnTime" class="block text-xs font-medium text-slate-300 mb-1">Час на враќање (24ч) *</label>
+                                <select id="returnTime" 
+                                    class="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none text-white font-mono">
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- STRICT PRICE FIELD FOR DRIVERS -->
+                        <div id="priceContainer" class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-1.5">
+                            <div class="flex items-center justify-between">
+                                <label for="price" class="block text-xs font-bold text-blue-400" id="priceInputLabel">Цена по патник (во МКД) *</label>
+                                <span id="priceRangeBadge" class="text-[11px] font-extrabold bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded-md border border-blue-500/30">
+                                    350 - 550 МКД
+                                </span>
+                            </div>
+                            <input type="number" id="price" required placeholder="Внесете износ" oninput="validatePriceInput()" 
+                                class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm font-bold text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                            <p id="priceErrorText" class="text-xs font-semibold text-rose-400 hidden mt-1">
+                                <i class="fa-solid fa-circle-xmark mr-1"></i> Цената е надвор од дозволениот опсег! Објавувањето е блокирано.
+                            </p>
+                        </div>
+
+                        <!-- Passenger Notice -->
+                        <div id="passengerPriceNotice" class="bg-emerald-950/30 p-3.5 rounded-xl border border-emerald-500/30 hidden">
+                            <div class="flex items-center gap-2 text-emerald-400 text-xs font-bold">
+                                <i class="fa-solid fa-circle-check text-base"></i>
+                                <span>Прифатена стандардна фер цена за релацијата</span>
+                            </div>
+                            <p class="text-[11px] text-slate-300 mt-1" id="passengerPriceNoticeDetail">
+                                Како патник ги прифаќате препорачаните трошоци за гориво (350 - 550 МКД).
+                            </p>
+                        </div>
+
+                        <!-- Deletion PIN -->
+                        <div class="bg-amber-950/20 p-3 rounded-xl border border-amber-500/20">
+                            <label for="userPin" class="block text-xs font-bold text-amber-400 mb-1">
+                                <i class="fa-solid fa-key mr-1"></i> Твој личен 4-цифрен PIN (За бришење) *
+                            </label>
+                            <input type="password" id="userPin" maxlength="6" required placeholder="Внесете PIN (пр. 1234)" 
+                                class="w-full px-3.5 py-2 bg-slate-950 border border-amber-500/30 rounded-xl text-sm font-mono tracking-widest text-white outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+
+                        <!-- Alert Box -->
+                        <div id="formAlert" class="hidden p-3 rounded-xl text-xs font-semibold"></div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" id="submitBtn" class="w-full py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-800 disabled:text-slate-500 disabled:cursor-not-allowed text-white font-bold text-sm rounded-xl shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span id="submitBtnText">Објави Превоз</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Price Limits Box -->
+                <div class="lg:col-span-5 space-y-4">
+                    <div class="bg-slate-900 rounded-2xl p-5 border border-slate-800 shadow-xl space-y-3">
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-lock text-blue-400 text-base"></i>
+                                <h3 class="font-bold text-white text-sm">Задолжителни ценовни лимити</h3>
+                            </div>
+                            <span class="text-[10px] bg-rose-500/20 text-rose-300 border border-rose-500/30 px-2 py-0.5 rounded-full font-bold">Блокада</span>
+                        </div>
+
+                        <div class="space-y-2 text-xs">
+                            <div class="p-2.5 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-between">
+                                <div>
+                                    <span class="font-bold text-white block">Кочани ↔ Скопје</span>
+                                    <span class="text-[11px] text-slate-400">Еден правец</span>
+                                </div>
+                                <span class="font-black text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-lg">350 - 550 МКД</span>
+                            </div>
+
+                            <div class="p-2.5 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-between">
+                                <div>
+                                    <span class="font-bold text-white block">Кочани ⇄ Скопје</span>
+                                    <span class="text-[11px] text-slate-400">Повратна (ист ден)</span>
+                                </div>
+                                <span class="font-black text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-lg">750 - 950 МКД</span>
+                            </div>
+
+                            <div class="p-2.5 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-between">
+                                <div>
+                                    <span class="font-bold text-indigo-300 block">Кочани ↔ Аеродром</span>
+                                    <span class="text-[11px] text-slate-400">Трансфер</span>
+                                </div>
+                                <span class="font-black text-indigo-400 bg-indigo-500/10 px-2.5 py-1 rounded-lg">300 - 450 МКД</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Offers Section -->
+            <div id="offers" class="bg-slate-900 rounded-2xl p-5 sm:p-6 border border-slate-800 shadow-xl space-y-4">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                    <div class="flex items-center gap-3">
+                        <h3 class="text-base sm:text-lg font-bold text-white">Активни објави</h3>
+                        <span id="ridesCount" class="px-2.5 py-0.5 bg-blue-500/20 text-blue-400 text-xs font-black rounded-full border border-blue-500/30">0</span>
+                    </div>
+
+                    <button id="adminClearAllBtn" onclick="adminClearAllRides()" class="hidden px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold rounded-xl transition-all">
+                        <i class="fa-solid fa-trash-can mr-1"></i> Избриши ги сите објави
+                    </button>
+                </div>
+
+                <!-- Filters -->
+                <div class="space-y-3 bg-slate-950 p-3.5 rounded-xl border border-slate-800">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] text-slate-400 font-semibold mb-1">Релација:</label>
+                            <select id="filterRoute" onchange="renderRides()" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-xs font-medium text-white outline-none">
+                                <option value="all">Сите релации</option>
+                                <option value="kocani_skopje">Кочани ➔ Скопје</option>
+                                <option value="skopje_kocani">Скопје ➔ Кочани</option>
+                                <option value="kocani_skopje_return">Кочани ⇄ Скопје (Повратна)</option>
+                                <option value="kocani_airport">Кочани ➔ Аеродром</option>
+                                <option value="airport_kocani">Аеродром ➔ Кочани</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] text-slate-400 font-semibold mb-1">Тип:</label>
+                            <select id="filterRole" onchange="renderRides()" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-xs font-medium text-white outline-none">
+                                <option value="all">Сите (Возачи и Патници)</option>
+                                <option value="driver">Само Возачи (Нудат)</option>
+                                <option value="passenger">Само Патници (Бараат)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grid -->
+                <div id="ridesList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+
+                <div id="emptyState" class="hidden text-center py-10 space-y-2">
+                    <i class="fa-solid fa-car-side text-slate-600 text-3xl"></i>
+                    <p class="text-xs font-semibold text-slate-400">Нема објави за избраниот филтер</p>
+                </div>
+            </div>
+
         </div>
+    </main>
 
-        <div class="form-group" id="priceContainer">
-          <label id="priceLabel">Цена (МКД)</label>
-          <input type="number" id="price" placeholder="на пр. 400" oninput="validatePrice()">
-          <div class="price-notice" id="priceNotice">Дозволена цена: 350 - 550 МКД</div>
+    <!-- CALENDAR MODAL -->
+    <div id="calendarModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 rounded-2xl max-w-sm w-full p-5 border border-slate-800 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <button onclick="changeMonth(-1)" class="p-2 hover:bg-slate-800 rounded-xl text-slate-300 transition-all"><i class="fa-solid fa-chevron-left"></i></button>
+                <h3 id="calendarMonthYear" class="text-sm font-bold text-white uppercase tracking-wider"></h3>
+                <button onclick="changeMonth(1)" class="p-2 hover:bg-slate-800 rounded-xl text-slate-300 transition-all"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+
+            <div class="grid grid-cols-7 gap-1 text-center text-[11px] font-bold text-slate-400">
+                <span>Пон</span><span>Вто</span><span>Сре</span><span>Чет</span><span>Пет</span><span>Саб</span><span>Нед</span>
+            </div>
+
+            <div id="calendarDaysGrid" class="grid grid-cols-7 gap-1 text-center text-xs"></div>
+
+            <div class="flex justify-end pt-2 border-t border-slate-800">
+                <button onclick="closeCalendarModal()" class="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-xl transition-all">Затвори</button>
+            </div>
         </div>
-
-        <div class="info-box hidden" id="passengerPriceNotice">
-          За избраната релација важи фер цена од <strong><span id="passengerPriceRangeText">350 - 550 МКД</span></strong>.
-        </div>
-
-        <div class="form-group">
-          <label>Датум</label>
-          <input type="date" id="dateInput" onchange="handleDateSelect(this.value)">
-          <input type="hidden" id="formattedDate">
-        </div>
-
-        <div class="form-group">
-          <label>Време на поаѓање (24ч)</label>
-          <select id="timeSelect">
-            <!-- Populated via JS -->
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Име / Детали</label>
-          <input type="text" id="name" placeholder="Твоето име" required>
-        </div>
-
-        <div class="form-group">
-          <label>Телефонски број</label>
-          <input type="tel" id="phone" placeholder="07X XXX XXX" required>
-        </div>
-
-        <div class="form-group">
-          <label>ПИН за бришење (4 цифри)</label>
-          <input type="password" id="userPin" maxlength="4" placeholder="****" required>
-        </div>
-
-        <button type="submit" class="btn" id="submitBtn">Објави</button>
-      </form>
     </div>
 
-    <h2 style="font-size: 1.2rem; margin: 20px 0 12px 0;">Активни објави</h2>
-    <div id="ridesList">
-      <!-- Rides will appear here -->
-    </div>
-  </div>
+    <!-- Delete Modal -->
+    <div id="deleteModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 rounded-2xl max-w-sm w-full p-6 border border-slate-800 shadow-2xl space-y-4">
+            <div class="text-center">
+                <i class="fa-solid fa-key text-rose-400 text-2xl mb-2"></i>
+                <h3 class="text-base font-bold text-white">Избриши ја објавата</h3>
+                <p class="text-xs text-slate-400 mt-1">Внесете го вашиот личен PIN за потврда:</p>
+            </div>
+            
+            <input type="password" id="modalPinInput" placeholder="PIN" maxlength="6" 
+                class="w-full px-4 py-2 bg-slate-950 border border-slate-800 rounded-xl text-center text-lg font-mono text-white tracking-widest outline-none focus:ring-2 focus:ring-rose-500">
+            
+            <p id="modalErrorMsg" class="text-xs text-rose-400 font-medium text-center hidden"></p>
 
-  <!-- Admin Modal -->
-  <div class="admin-modal" id="adminModal">
-    <div class="modal-content">
-      <h3 style="margin-bottom: 12px;">Админ Панел</h3>
-      <div id="adminLoginForm">
-        <div class="form-group">
-          <label>Внеси Админ Лозинка</label>
-          <input type="password" id="adminPasswordInput">
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="closeDeleteModal()" class="py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl transition-all">Откажи</button>
+                <button onclick="confirmDeleteRide()" class="py-2 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold rounded-xl transition-all">Избриши</button>
+            </div>
         </div>
-        <button class="btn" onclick="loginAdmin()">Најави се</button>
-      </div>
-
-      <div id="adminControls" class="hidden">
-        <p style="margin-bottom: 12px; color: var(--success); font-weight: 600;">Успешно сте најавени како Админ!</p>
-        <div class="form-group">
-          <label>Промени Админ Лозинка</label>
-          <input type="password" id="newAdminPasswordInput" placeholder="Нова лозинка">
-        </div>
-        <button class="btn" onclick="changeAdminPassword()" style="margin-bottom: 8px;">Зачувај нова лозинка</button>
-        <button class="btn btn-outline" onclick="logoutAdmin()">Одјави се</button>
-      </div>
-
-      <button class="btn btn-outline" style="margin-top: 12px; border: none;" onclick="toggleAdminModal()">Затвори</button>
     </div>
-  </div>
 
-  <script>
-    const PRICE_RANGES = {
-      'kocani-skopje': { min: 350, max: 550, label: '350 - 550 МКД' },
-      'kocani-skopje-round': { min: 750, max: 950, label: '750 - 950 МКД' },
-      'kocani-airport': { min: 300, max: 450, label: '300 - 450 МКД' }
-    };
+    <!-- Admin Modal -->
+    <div id="adminModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 rounded-2xl max-w-sm w-full p-6 border border-slate-800 shadow-2xl space-y-4">
+            <div class="text-center">
+                <i class="fa-solid fa-user-shield text-blue-400 text-2xl mb-2"></i>
+                <h3 class="text-base font-bold text-white" id="adminModalTitle">Администраторски Влез</h3>
+                <p class="text-xs text-slate-400 mt-1" id="adminModalSubtitle">Внесете ја Админ лозинката:</p>
+            </div>
+            
+            <input type="password" id="adminPassInput" placeholder="Admin PIN" 
+                class="w-full px-4 py-2 bg-slate-950 border border-slate-800 rounded-xl text-center text-sm font-mono text-white outline-none focus:ring-2 focus:ring-blue-500">
+            
+            <div id="changeAdminPassSection" class="hidden border-t border-slate-800 pt-3 space-y-2">
+                <label class="block text-xs font-bold text-slate-300 text-center">Промени Админ Лозинка</label>
+                <input type="password" id="newAdminPassInput" placeholder="Нова Лозинка" 
+                    class="w-full px-4 py-2 bg-slate-950 border border-slate-800 rounded-xl text-center text-sm font-mono text-white outline-none focus:ring-2 focus:ring-emerald-500">
+                <button onclick="changeAdminPassword()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl transition-all">
+                    Зачувај Нова Лозинка
+                </button>
+            </div>
 
-    let rides = JSON.parse(localStorage.getItem('rides_data') || '[]');
-    let isAdmin = false;
-    let currentAdminPassword = localStorage.getItem('admin_password') || 'admin123';
+            <p id="adminErrorMsg" class="text-xs text-rose-400 font-medium text-center hidden"></p>
+            <p id="adminSuccessMsg" class="text-xs text-emerald-400 font-medium text-center hidden"></p>
 
-    // Populate Time Dropdown (24h, 30min steps)
-    function populateTimes() {
-      const select = document.getElementById('timeSelect');
-      select.innerHTML = '';
-      for (let hour = 0; hour < 24; hour++) {
-        for (let min = 0; min < 60; min += 30) {
-          const hh = String(hour).padStart(2, '0');
-          const mm = String(min).padStart(2, '0');
-          const timeStr = `${hh}:${mm}`;
-          const option = document.createElement('option');
-          option.value = timeStr;
-          option.textContent = timeStr;
-          select.appendChild(option);
+            <div class="grid grid-cols-2 gap-3" id="adminModalActions">
+                <button onclick="closeAdminModal()" class="py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl transition-all">Откажи</button>
+                <button id="adminLoginBtn" onclick="verifyAdminPass()" class="py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition-all">Најави се</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Logic -->
+    <script>
+        let currentAdminPin = localStorage.getItem('kocani_admin_pin') || "admin123";
+        let isAdminActive = false;
+        let selectedRideIdForDelete = null;
+
+        const daysOfWeekMK = ['Недела', 'Понеделник', 'Вторник', 'Среда', 'Четврток', 'Петок', 'Сабота'];
+        const monthsMK = ['Јануари', 'Февруари', 'Март', 'Април', 'Мај', 'Јуни', 'Јули', 'Август', 'Септември', 'Октомври', 'Ноември', 'Декември'];
+
+        const routeConfigs = {
+            'kocani_skopje': { name: 'Кочани ➔ Скопје', minPrice: 350, maxPrice: 550, badge: '350 - 550 МКД', isReturn: false },
+            'skopje_kocani': { name: 'Скопје ➔ Кочани', minPrice: 350, maxPrice: 550, badge: '350 - 550 МКД', isReturn: false },
+            'kocani_skopje_return': { name: 'Кочани ⇄ Скопје (Повратна)', minPrice: 750, maxPrice: 950, badge: '750 - 950 МКД', isReturn: true },
+            'kocani_airport': { name: 'Кочани ➔ Аеродром Скопје', minPrice: 300, maxPrice: 450, badge: '300 - 450 МКД', isReturn: false },
+            'airport_kocani': { name: 'Аеродром Скопје ➔ Кочани', minPrice: 300, maxPrice: 450, badge: '300 - 450 МКД', isReturn: false }
+        };
+
+        let rides = JSON.parse(localStorage.getItem('kocani_rides_v7')) || [];
+
+        // CALENDAR LOGIC
+        let currentCalDate = new Date();
+        let selectedDateStr = getTodayDateStr();
+
+        function openCalendarModal() {
+            document.getElementById('calendarModal').classList.remove('hidden');
+            renderCalendar();
         }
-      }
-    }
 
-    function handleDateSelect(val) {
-      if (!val) return;
-      const parts = val.split('-');
-      const dateObj = new Date(parts[0], parts[1] - 1, parts[2]);
-      const days = ['Недела', 'Понеделник', 'Вторник', 'Среда', 'Четврток', 'Петок', 'Сабота'];
-      const dayName = days[dateObj.getDay()];
-      const formatted = `${parts[2]}.${parts[1]}.${parts[0]} (${dayName})`;
-      document.getElementById('formattedDate').value = formatted;
-    }
-
-    function handleRoleChange() {
-      const role = document.getElementById('role').value;
-      const priceContainer = document.getElementById('priceContainer');
-      const passengerNotice = document.getElementById('passengerPriceNotice');
-      
-      if (role === 'passenger') {
-        priceContainer.classList.add('hidden');
-        passengerNotice.classList.remove('hidden');
-        updatePassengerNoticeText();
-      } else {
-        priceContainer.classList.remove('hidden');
-        passengerNotice.classList.add('hidden');
-        validatePrice();
-      }
-    }
-
-    function handleRouteChange() {
-      const role = document.getElementById('role').value;
-      if (role === 'passenger') {
-        updatePassengerNoticeText();
-      } else {
-        validatePrice();
-      }
-    }
-
-    function updatePassengerNoticeText() {
-      const route = document.getElementById('route').value;
-      const range = PRICE_RANGES[route];
-      document.getElementById('passengerPriceRangeText').textContent = range.label;
-    }
-
-    function validatePrice() {
-      const role = document.getElementById('role').value;
-      if (role === 'passenger') return;
-
-      const route = document.getElementById('route').value;
-      const priceInput = document.getElementById('price');
-      const notice = document.getElementById('priceNotice');
-      const submitBtn = document.getElementById('submitBtn');
-      const val = parseInt(priceInput.value, 10);
-      const range = PRICE_RANGES[route];
-
-      notice.textContent = `Дозволена цена: ${range.min} - ${range.max} МКД`;
-
-      if (!val || val < range.min || val > range.max) {
-        notice.style.color = 'var(--danger)';
-        submitBtn.disabled = true;
-      } else {
-        notice.style.color = 'var(--text-muted)';
-        submitBtn.disabled = false;
-      }
-    }
-
-    function handleFormSubmit(e) {
-      e.preventDefault();
-      
-      const role = document.getElementById('role').value;
-      const route = document.getElementById('route').value;
-      const dateFormatted = document.getElementById('formattedDate').value;
-      const time = document.getElementById('timeSelect').value;
-      const name = document.getElementById('name').value;
-      const phone = document.getElementById('phone').value;
-      const pin = document.getElementById('userPin').value;
-
-      if (!dateFormatted) {
-        alert('Ве молиме изберете датум!');
-        return;
-      }
-
-      let priceDisplay = '';
-      if (role === 'passenger') {
-        priceDisplay = PRICE_RANGES[route].label;
-      } else {
-        priceDisplay = `${document.getElementById('price').value} МКД`;
-      }
-
-      const routeNames = {
-        'kocani-skopje': 'Кочани ⇄ Скопје',
-        'kocani-skopje-round': 'Кочани ⇄ Скопје (Повратна)',
-        'kocani-airport': 'Кочани ⇄ Аеродром'
-      };
-
-      const newRide = {
-        id: Date.now(),
-        role,
-        routeName: routeNames[route],
-        priceDisplay,
-        date: dateFormatted,
-        time,
-        name,
-        phone,
-        pin
-      };
-
-      rides.unshift(newRide);
-      localStorage.setItem('rides_data', JSON.stringify(rides));
-      
-      document.getElementById('rideForm').reset();
-      // Reset default date picker
-      const today = new Date().toISOString().split('T')[0];
-      document.getElementById('dateInput').value = today;
-      handleDateSelect(today);
-      
-      handleRoleChange();
-      renderRides();
-    }
-
-    function renderRides() {
-      const container = document.getElementById('ridesList');
-      container.innerHTML = '';
-
-      if (rides.length === 0) {
-        container.innerHTML = '<p style="text-align:center; color: var(--text-muted);">Нема активни објави.</p>';
-        return;
-      }
-
-      rides.forEach(ride => {
-        const card = document.createElement('div');
-        card.className = 'card ride-card';
-        
-        const badgeClass = ride.role === 'driver' ? 'badge-driver' : 'badge-passenger';
-        const badgeText = ride.role === 'driver' ? 'Возач' : 'Патник';
-        
-        // Clean phone for Viber deep link
-        let cleanPhone = ride.phone.replace(/\s+/g, '');
-        if (cleanPhone.startsWith('0')) {
-          cleanPhone = '+389' + cleanPhone.substring(1);
+        function closeCalendarModal() {
+            document.getElementById('calendarModal').classList.add('hidden');
         }
 
-        card.innerHTML = `
-          <div class="ride-header">
-            <span class="badge ${badgeClass}">${badgeText}</span>
-            <span class="ride-price">${ride.priceDisplay}</span>
-          </div>
-          <div class="ride-route">${ride.routeName}</div>
-          <div class="ride-details">
-            📅 ${ride.date} во ${ride.time} ч.<br>
-            👤 ${ride.name}
-          </div>
-          <div class="ride-actions">
-            <a href="tel:${ride.phone}" class="btn-phone">📞 Повик</a>
-            <a href="viber://chat?number=${cleanPhone}" class="btn-viber">💬 Viber</a>
-            <button onclick="deleteRide(${ride.id})" class="btn-outline" style="border-color: var(--danger); color: var(--danger);">Избриши</button>
-          </div>
-        `;
+        function changeMonth(delta) {
+            currentCalDate.setMonth(currentCalDate.getMonth() + delta);
+            renderCalendar();
+        }
 
-        container.appendChild(card);
-      });
-    }
+        function renderCalendar() {
+            const year = currentCalDate.getFullYear();
+            const month = currentCalDate.getMonth();
 
-    function deleteRide(id) {
-      const ride = rides.find(r => r.id === id);
-      if (!ride) return;
+            document.getElementById('calendarMonthYear').textContent = `${monthsMK[month]} ${year}`;
 
-      if (isAdmin) {
-        rides = rides.filter(r => r.id !== id);
-        localStorage.setItem('rides_data', JSON.stringify(rides));
-        renderRides();
-        return;
-      }
+            const firstDay = new Date(year, month, 1);
+            let startingDay = firstDay.getDay() - 1; 
+            if (startingDay === -1) startingDay = 6; 
 
-      const inputPin = prompt('Внесете го вашиот 4-цифрен ПИН за бришење:');
-      if (inputPin === ride.pin) {
-        rides = rides.filter(r => r.id !== id);
-        localStorage.setItem('rides_data', JSON.stringify(rides));
-        renderRides();
-      } else if (inputPin !== null) {
-        alert('Неточен ПИН!');
-      }
-    }
+            const totalDays = new Date(year, month + 1, 0).getDate();
+            const grid = document.getElementById('calendarDaysGrid');
+            grid.innerHTML = '';
 
-    // Admin Modal Logic
-    function toggleAdminModal() {
-      const modal = document.getElementById('adminModal');
-      modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
-    }
+            for (let i = 0; i < startingDay; i++) {
+                grid.innerHTML += `<div></div>`;
+            }
 
-    function loginAdmin() {
-      const pwd = document.getElementById('adminPasswordInput').value;
-      if (pwd === currentAdminPassword) {
-        isAdmin = true;
-        document.getElementById('adminLoginForm').classList.add('hidden');
-        document.getElementById('adminControls').classList.remove('hidden');
-        document.getElementById('adminStatusText').textContent = 'Админ Active';
-        document.getElementById('adminStatusText').style.color = 'var(--success)';
-        renderRides();
-      } else {
-        alert('Неточна админ лозинка!');
-      }
-    }
+            for (let day = 1; day <= totalDays; day++) {
+                const dayStr = `${day.toString().padStart(2, '0')}.${(month + 1).toString().padStart(2, '0')}.${year}`;
+                const isoStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+                
+                const isSelected = selectedDateStr === isoStr;
+                const btnClass = isSelected 
+                    ? 'bg-blue-600 text-white font-bold rounded-xl py-2 shadow-md' 
+                    : 'hover:bg-slate-800 text-slate-200 rounded-xl py-2 transition-all';
 
-    function logoutAdmin() {
-      isAdmin = false;
-      document.getElementById('adminLoginForm').classList.remove('hidden');
-      document.getElementById('adminControls').classList.add('hidden');
-      document.getElementById('adminStatusText').textContent = 'Корисник';
-      document.getElementById('adminStatusText').style.color = 'inherit';
-      toggleAdminModal();
-      renderRides();
-    }
+                grid.innerHTML += `<button onclick="selectCalDate('${isoStr}')" class="${btnClass}">${day}</button>`;
+            }
+        }
 
-    function changeAdminPassword() {
-      const newPwd = document.getElementById('newAdminPasswordInput').value;
-      if (newPwd.length < 4) {
-        alert('Лозинката мора да има најмалку 4 карактери.');
-        return;
-      }
-      currentAdminPassword = newPwd;
-      localStorage.setItem('admin_password', newPwd);
-      alert('Лозинката е успешно изменета!');
-      document.getElementById('newAdminPasswordInput').value = '';
-    }
+        function selectCalDate(isoStr) {
+            selectedDateStr = isoStr;
+            document.getElementById('travelDate').value = isoStr;
+            
+            const parts = isoStr.split('-');
+            const d = new Date(parts[0], parts[1] - 1, parts[2]);
+            const dayName = daysOfWeekMK[d.getDay()];
 
-    // Initial setup
-    window.onload = function() {
-      populateTimes();
-      
-      // Default to today
-      const today = new Date().toISOString().split('T')[0];
-      document.getElementById('dateInput').value = today;
-      handleDateSelect(today);
-      
-      handleRoleChange();
-      renderRides();
-    };
-  </script>
+            document.getElementById('displayFormattedDate').textContent = `${parts[2]}.${parts[1]}.${parts[0]} (${dayName})`;
+            closeCalendarModal();
+        }
+
+        function populateTimeDropdowns() {
+            const depSelect = document.getElementById('departureTime');
+            const retSelect = document.getElementById('returnTime');
+            depSelect.innerHTML = '';
+            retSelect.innerHTML = '';
+
+            for (let hour = 0; hour < 24; hour++) {
+                for (let min of [0, 30]) {
+                    const timeVal = `${hour.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`;
+                    depSelect.innerHTML += `<option value="${timeVal}">${timeVal}</option>`;
+                    retSelect.innerHTML += `<option value="${timeVal}">${timeVal}</option>`;
+                }
+            }
+            depSelect.value = "08:00";
+            retSelect.value = "16:00";
+        }
+
+        function handleRouteChange() {
+            const routeKey = document.getElementById('route').value;
+            const config = routeConfigs[routeKey];
+
+            document.getElementById('priceRangeBadge').textContent = config.badge;
+
+            const returnContainer = document.getElementById('returnTimeContainer');
+            const returnInput = document.getElementById('returnTime');
+            const depLabel = document.getElementById('depTimeLabel');
+
+            if (config.isReturn) {
+                returnContainer.classList.remove('hidden');
+                returnInput.required = true;
+                depLabel.textContent = 'Час на тргнување (24ч) *';
+            } else {
+                returnContainer.classList.add('hidden');
+                returnInput.required = false;
+                depLabel.textContent = 'Час на поаѓање (24ч) *';
+            }
+
+            updateRoleUI();
+        }
+
+        function updateRoleUI() {
+            const role = document.querySelector('input[name="role"]:checked').value;
+            const routeKey = document.getElementById('route').value;
+            const config = routeConfigs[routeKey];
+            
+            const priceContainer = document.getElementById('priceContainer');
+            const priceInput = document.getElementById('price');
+            const priceNotice = document.getElementById('passengerPriceNotice');
+            const priceNoticeDetail = document.getElementById('passengerPriceNoticeDetail');
+            const submitBtn = document.getElementById('submitBtn');
+
+            document.getElementById('seatsLabel').textContent = role === 'driver' ? 'Слободни места *' : 'Барани места *';
+
+            if (role === 'passenger') {
+                priceContainer.classList.add('hidden');
+                priceInput.required = false;
+                priceInput.value = ''; 
+                priceNotice.classList.remove('hidden');
+                priceNoticeDetail.textContent = `Како патник ги прифаќате препорачаните трошоци за гориво во рамки на ${config.badge}.`;
+                submitBtn.disabled = false;
+            } else {
+                priceContainer.classList.remove('hidden');
+                priceInput.required = true;
+                priceNotice.classList.add('hidden');
+                validatePriceInput();
+            }
+        }
+
+        function validatePriceInput() {
+            const role = document.querySelector('input[name="role"]:checked').value;
+            if (role === 'passenger') return;
+
+            const routeKey = document.getElementById('route').value;
+            const config = routeConfigs[routeKey];
+            const priceInput = document.getElementById('price');
+            const priceVal = parseInt(priceInput.value, 10);
+            const priceError = document.getElementById('priceErrorText');
+            const submitBtn = document.getElementById('submitBtn');
+
+            if (!priceInput.value) {
+                priceError.classList.add('hidden');
+                priceInput.classList.remove('border-rose-500', 'bg-rose-500/10');
+                submitBtn.disabled = false;
+                return;
+            }
+
+            if (isNaN(priceVal) || priceVal < config.minPrice || priceVal > config.maxPrice) {
+                priceError.classList.remove('hidden');
+                priceInput.classList.add('border-rose-500', 'bg-rose-500/10');
+                submitBtn.disabled = true;
+            } else {
+                priceError.classList.add('hidden');
+                priceInput.classList.remove('border-rose-500', 'bg-rose-500/10');
+                submitBtn.disabled = false;
+            }
+        }
+
+        function autoFillPinFromPhone() {
+            const phoneVal = document.getElementById('phone').value.trim();
+            const pinInput = document.getElementById('userPin');
+            const cleanDigits = phoneVal.replace(/[^0-9]/g, '');
+            if (cleanDigits.length >= 4 && !pinInput.value) {
+                pinInput.value = cleanDigits.slice(-4);
+            }
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+
+            const role = document.querySelector('input[name="role"]:checked').value;
+            const fullName = document.getElementById('fullName').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const routeKey = document.getElementById('route').value;
+            const seats = parseInt(document.getElementById('seats').value, 10);
+            const travelDate = document.getElementById('travelDate').value;
+            const departureTime = document.getElementById('departureTime').value;
+            const returnTime = document.getElementById('returnTime').value;
+            const priceVal = parseInt(document.getElementById('price').value, 10);
+            const userPin = document.getElementById('userPin').value.trim();
+
+            if (!travelDate) {
+                alert('Ве молиме изберете датум на патување!');
+                return;
+            }
+
+            const parts = travelDate.split('-');
+            const d = new Date(parts[0], parts[1] - 1, parts[2]);
+            const dayOfWeek = daysOfWeekMK[d.getDay()];
+
+            const newRide = {
+                id: Date.now().toString(),
+                fullName,
+                phone,
+                role,
+                routeKey,
+                seats,
+                travelDate,
+                dayOfWeek,
+                departureTime,
+                returnTime,
+                price: role === 'driver' ? priceVal : null,
+                pin: userPin || '1234',
+                createdAt: new Date().toISOString()
+            };
+
+            rides.unshift(newRide);
+            saveRides();
+            renderRides();
+
+            const alertBox = document.getElementById('formAlert');
+            alertBox.className = 'p-3 rounded-xl text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 block';
+            alertBox.innerHTML = `<i class="fa-solid fa-circle-check mr-1"></i> Објавено! PIN за бришење: <strong>${newRide.pin}</strong>.`;
+
+            document.getElementById('rideForm').reset();
+            selectCalDate(getTodayDateStr());
+            populateTimeDropdowns();
+            handleRouteChange();
+            updateRoleUI();
+
+            setTimeout(() => { alertBox.className = 'hidden'; }, 4000);
+        }
+
+        function requestDeleteRide(id) {
+            selectedRideIdForDelete = id;
+
+            if (isAdminActive) {
+                if (confirm('Админ: Избриши ја објавата?')) {
+                    rides = rides.filter(r => r.id !== id);
+                    saveRides();
+                    renderRides();
+                }
+                return;
+            }
+
+            document.getElementById('modalPinInput').value = '';
+            document.getElementById('modalErrorMsg').classList.add('hidden');
+            document.getElementById('deleteModal').classList.remove('hidden');
+        }
+
+        function confirmDeleteRide() {
+            const enteredPin = document.getElementById('modalPinInput').value.trim();
+            const ride = rides.find(r => r.id === selectedRideIdForDelete);
+            const errorMsg = document.getElementById('modalErrorMsg');
+
+            if (!ride) {
+                closeDeleteModal();
+                return;
+            }
+
+            if (enteredPin === ride.pin || enteredPin === currentAdminPin) {
+                rides = rides.filter(r => r.id !== selectedRideIdForDelete);
+                saveRides();
+                renderRides();
+                closeDeleteModal();
+            } else {
+                errorMsg.textContent = 'Погрешен PIN!';
+                errorMsg.classList.remove('hidden');
+            }
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.add('hidden');
+            selectedRideIdForDelete = null;
+        }
+
+        function openAdminModal() {
+            if (isAdminActive) {
+                document.getElementById('adminModalTitle').textContent = "Админ Панел";
+                document.getElementById('adminModalSubtitle').textContent = "Управување со лозинка";
+                document.getElementById('adminPassInput').classList.add('hidden');
+                document.getElementById('adminLoginBtn').classList.add('hidden');
+                document.getElementById('changeAdminPassSection').classList.remove('hidden');
+                document.getElementById('adminErrorMsg').classList.add('hidden');
+                document.getElementById('adminSuccessMsg').classList.add('hidden');
+                document.getElementById('adminModal').classList.remove('hidden');
+                return;
+            }
+
+            document.getElementById('adminModalTitle').textContent = "Администраторски Влез";
+            document.getElementById('adminModalSubtitle').textContent = "Внесете ја Админ лозинката:";
+            document.getElementById('adminPassInput').classList.remove('hidden');
+            document.getElementById('adminLoginBtn').classList.remove('hidden');
+            document.getElementById('changeAdminPassSection').classList.add('hidden');
+            document.getElementById('adminPassInput').value = '';
+            document.getElementById('adminErrorMsg').classList.add('hidden');
+            document.getElementById('adminSuccessMsg').classList.add('hidden');
+            document.getElementById('adminModal').classList.remove('hidden');
+        }
+
+        function verifyAdminPass() {
+            const pass = document.getElementById('adminPassInput').value.trim();
+            const errorMsg = document.getElementById('adminErrorMsg');
+
+            if (pass === currentAdminPin) {
+                isAdminActive = true;
+                document.getElementById('adminBtnText').textContent = 'Админ Active';
+                document.getElementById('adminBtn').classList.add('bg-rose-600', 'text-white');
+                document.getElementById('adminClearAllBtn').classList.remove('hidden');
+                closeAdminModal();
+                renderRides();
+            } else {
+                errorMsg.textContent = 'Погрешен Admin PIN!';
+                errorMsg.classList.remove('hidden');
+            }
+        }
+
+        function changeAdminPassword() {
+            const newPass = document.getElementById('newAdminPassInput').value.trim();
+            const successMsg = document.getElementById('adminSuccessMsg');
+            const errorMsg = document.getElementById('adminErrorMsg');
+
+            if (newPass.length < 4) {
+                errorMsg.textContent = 'Лозинката мора да има најмалку 4 карактери!';
+                errorMsg.classList.remove('hidden');
+                successMsg.classList.add('hidden');
+                return;
+            }
+
+            currentAdminPin = newPass;
+            localStorage.setItem('kocani_admin_pin', newPass);
+            errorMsg.classList.add('hidden');
+            successMsg.textContent = 'Лозинката е успешно променета!';
+            successMsg.classList.remove('hidden');
+            document.getElementById('newAdminPassInput').value = '';
+
+            setTimeout(() => { closeAdminModal(); }, 1500);
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').classList.add('hidden');
+        }
+
+        function adminClearAllRides() {
+            if (confirm('АДМИН: Бришење на СИТЕ објави?')) {
+                rides = [];
+                saveRides();
+                renderRides();
+            }
+        }
+
+        function saveRides() {
+            localStorage.setItem('kocani_rides_v7', JSON.stringify(rides));
+        }
+
+        function renderRides() {
+            const listContainer = document.getElementById('ridesList');
+            const emptyState = document.getElementById('emptyState');
+            const countBadge = document.getElementById('ridesCount');
+
+            const routeFilter = document.getElementById('filterRoute').value;
+            const roleFilter = document.getElementById('filterRole').value;
+
+            const filtered = rides.filter(ride => {
+                const matchRoute = routeFilter === 'all' || ride.routeKey === routeFilter;
+                const matchRole = roleFilter === 'all' || ride.role === roleFilter;
+                return matchRoute && matchRole;
+            });
+
+            countBadge.textContent = filtered.length;
+
+            if (filtered.length === 0) {
+                listContainer.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+
+            listContainer.innerHTML = filtered.map(ride => {
+                const isDriver = ride.role === 'driver';
+                const config = routeConfigs[ride.routeKey] || { name: ride.routeKey, badge: '350 - 550 МКД' };
+                const priceDisplay = isDriver ? `${ride.price} МКД` : config.badge;
+
+                let cleanPhone = ride.phone.replace(/[^0-9]/g, '');
+                if (cleanPhone.startsWith('0')) {
+                    cleanPhone = '+389' + cleanPhone.substring(1);
+                } else if (!cleanPhone.startsWith('389')) {
+                    cleanPhone = '+389' + cleanPhone;
+                } else {
+                    cleanPhone = '+' + cleanPhone;
+                }
+
+                return `
+                    <div class="bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-800 hover:border-blue-500/40 transition-all flex flex-col justify-between space-y-4">
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-2">
+                                <span class="px-2.5 py-1 rounded-lg text-xs font-bold ${isDriver ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'} flex items-center gap-1.5">
+                                    <i class="fa-solid ${isDriver ? 'fa-car' : 'fa-user-group'}"></i>
+                                    <span>${isDriver ? 'Возач' : 'Патник'}</span>
+                                </span>
+                                <span class="text-xs font-black text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-lg border border-blue-500/20">
+                                    ${priceDisplay}
+                                </span>
+                            </div>
+
+                            <h4 class="font-bold text-white text-base">${escapeHtml(ride.fullName)}</h4>
+                            <p class="text-xs font-semibold text-slate-300 mt-1">
+                                <i class="fa-solid fa-route text-blue-400 mr-1"></i> ${config.name}
+                            </p>
+
+                            <div class="mt-3 p-2.5 bg-slate-950 rounded-xl border border-slate-800/80 text-xs space-y-1">
+                                <div class="flex justify-between text-slate-300">
+                                    <span class="text-slate-400">Датум:</span>
+                                    <span class="font-bold text-white">${formatDate(ride.travelDate)} <span class="text-blue-400">(${ride.dayOfWeek || ''})</span></span>
+                                </div>
+                                <div class="flex justify-between text-slate-300">
+                                    <span class="text-slate-400">${config.isReturn ? 'Тргнување:' : 'Час:'}</span>
+                                    <span class="font-bold text-blue-300">${ride.departureTime} ч.</span>
+                                </div>
+                                ${config.isReturn && ride.returnTime ? `
+                                <div class="flex justify-between text-slate-300">
+                                    <span class="text-slate-400">Враќање:</span>
+                                    <span class="font-bold text-indigo-300">${ride.returnTime} ч.</span>
+                                </div>
+                                ` : ''}
+                                <div class="flex justify-between text-slate-300">
+                                    <span class="text-slate-400">Места:</span>
+                                    <span class="font-bold">${ride.seats} ${ride.seats === 1 ? 'место' : 'места'}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-3 border-t border-slate-800 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <a href="tel:${ride.phone}" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition-all flex items-center gap-1">
+                                    <i class="fa-solid fa-phone"></i>
+                                    <span>Повик</span>
+                                </a>
+                                <a href="viber://chat?number=${cleanPhone}" target="_blank" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold rounded-lg transition-all flex items-center gap-1">
+                                    <i class="fa-brands fa-viber"></i>
+                                    <span>Viber</span>
+                                </a>
+                            </div>
+
+                            <button onclick="requestDeleteRide('${ride.id}')" class="text-xs text-slate-400 hover:text-rose-400 transition-colors p-1.5">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getTodayDateStr() {
+            return new Date().toISOString().split('T')[0];
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const p = dateStr.split('-');
+            return p.length === 3 ? `${p[2]}.${p[1]}.${p[0]}` : dateStr;
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        }
+
+        window.onload = function() {
+            selectCalDate(getTodayDateStr());
+            populateTimeDropdowns();
+            handleRouteChange();
+            renderRides();
+        };
+    </script>
 </body>
 </html>
