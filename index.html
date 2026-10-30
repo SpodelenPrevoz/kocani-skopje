@@ -5,10 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Споделен Превоз | Скопје ⇄ Кочани ⇄ Аеродром</title>
     
-    <!-- PWA Meta Tags -->
+    <!-- PWA Settings & Meta Tags -->
     <meta name="theme-color" content="#0f172a">
     <meta name="description" content="Фер и поволен споделен превоз за релација Скопје, Кочани и Аеродром.">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Споделен Превоз">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3097/3097180.png">
+    
+    <!-- Embedded PWA Web App Manifest -->
+    <link rel="manifest" href='data:application/manifest+json,{"name":"Споделен Превоз","short_name":"Превоз","start_url":"./","display":"standalone","background_color":"#020617","theme_color":"#0f172a","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/3097/3097180.png","sizes":"512x512","type":"image/png"}]}'>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -37,7 +44,7 @@
         ::-webkit-scrollbar-thumb:hover { background: #334155; }
     </style>
 </head>
-<body class="h-full flex flex-col font-sans bg-slate-950 text-slate-100 antialiased">
+<body class="h-full flex flex-col font-sans bg-slate-950 text-slate-100 antialiased relative">
 
     <!-- Header -->
     <header class="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 sticky top-0 z-30 shadow-lg">
@@ -68,7 +75,7 @@
         </div>
     </header>
 
-    <main class="flex-1 pb-16">
+    <main class="flex-1 pb-24">
         <!-- Banner -->
         <section class="bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border-b border-slate-800/80 py-6">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-2">
@@ -191,7 +198,7 @@
                             </div>
                         </div>
 
-                        <!-- STRICT PRICE FIELD FOR DRIVERS -->
+                        <!-- Price Field -->
                         <div id="priceContainer" class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-1.5">
                             <div class="flex items-center justify-between">
                                 <label for="price" class="block text-xs font-bold text-blue-400" id="priceInputLabel">Цена по патник (во МКД) *</label>
@@ -328,6 +335,27 @@
         </div>
     </main>
 
+    <!-- FLOATING PWA BANNER -->
+    <div id="pwaBanner" class="fixed bottom-4 left-4 right-4 max-w-md mx-auto bg-slate-900/95 backdrop-blur-md border border-blue-500/40 p-3.5 rounded-2xl shadow-2xl flex items-center justify-between z-40 transition-all">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-xl flex items-center justify-center text-white font-bold shadow-md shrink-0">
+                <i class="fa-solid fa-mobile-screen-button text-base"></i>
+            </div>
+            <div>
+                <h4 class="text-xs font-bold text-white leading-tight">Брз пристап</h4>
+                <p class="text-[11px] text-slate-300">Додај на почетен екран</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-1.5">
+            <button onclick="triggerShortcutAction()" class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg transition-all">
+                Додај
+            </button>
+            <button onclick="closePwaBanner()" class="p-1.5 text-slate-400 hover:text-white text-xs">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+    </div>
+
     <!-- CALENDAR MODAL -->
     <div id="calendarModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-slate-900 rounded-2xl max-w-sm w-full p-5 border border-slate-800 shadow-2xl space-y-4">
@@ -401,11 +429,26 @@
         </div>
     </div>
 
-    <!-- Application Logic -->
+    <!-- Application Logic & Service Worker -->
     <script>
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            const swCode = `
+                self.addEventListener('install', (e) => self.skipWaiting());
+                self.addEventListener('activate', (e) => self.clients.claim());
+                self.addEventListener('fetch', (e) => {
+                    e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+                });
+            `;
+            const blob = new Blob([swCode], { type: 'text/javascript' });
+            const swUrl = URL.createObjectURL(blob);
+            navigator.serviceWorker.register(swUrl).catch(console.error);
+        }
+
         let currentAdminPin = localStorage.getItem('kocani_admin_pin') || "admin123";
         let isAdminActive = false;
         let selectedRideIdForDelete = null;
+        let deferredPrompt = null;
 
         const daysOfWeekMK = ['Недела', 'Понеделник', 'Вторник', 'Среда', 'Четврток', 'Петок', 'Сабота'];
         const monthsMK = ['Јануари', 'Февруари', 'Март', 'Април', 'Мај', 'Јуни', 'Јули', 'Август', 'Септември', 'Октомври', 'Ноември', 'Декември'];
@@ -418,7 +461,53 @@
             'airport_kocani': { name: 'Аеродром Скопје ➔ Кочани', minPrice: 300, maxPrice: 450, badge: '300 - 450 МКД', isReturn: false }
         };
 
-        let rides = JSON.parse(localStorage.getItem('kocani_rides_v7')) || [];
+        let rides = JSON.parse(localStorage.getItem('kocani_rides_v7')) || [
+            {
+                id: '1',
+                fullName: 'Марко Стојанов',
+                phone: '070123456',
+                role: 'driver',
+                routeKey: 'kocani_skopje_return',
+                seats: 3,
+                travelDate: getTodayDateStr(),
+                dayOfWeek: 'Петок',
+                departureTime: '07:30',
+                returnTime: '16:30',
+                price: 800,
+                pin: '1234',
+                createdAt: new Date().toISOString()
+            }
+        ];
+
+        // PWA PROMPT LOGIC
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('pwaBanner').classList.remove('hidden');
+        });
+
+        function triggerShortcutAction() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        closePwaBanner();
+                    }
+                    deferredPrompt = null;
+                });
+            } else {
+                const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+                if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                    alert("За да додадете кратенка на iPhone:\n1. Кликнете на копчето Share (квадратчето со стрелка на дното).\n2. Изберете 'Add to Home Screen' (Додај на почетен екран).");
+                } else {
+                    alert("За да додадете кратенка:\n1. Отворете го менито на прелистувачот (3-те точки горе десно).\n2. Изберете 'Add to Home screen' (Додај на почетен екран).");
+                }
+            }
+        }
+
+        function closePwaBanner() {
+            document.getElementById('pwaBanner').classList.add('hidden');
+        }
 
         // CALENDAR LOGIC
         let currentCalDate = new Date();
@@ -457,7 +546,6 @@
             }
 
             for (let day = 1; day <= totalDays; day++) {
-                const dayStr = `${day.toString().padStart(2, '0')}.${(month + 1).toString().padStart(2, '0')}.${year}`;
                 const isoStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
                 
                 const isSelected = selectedDateStr === isoStr;
